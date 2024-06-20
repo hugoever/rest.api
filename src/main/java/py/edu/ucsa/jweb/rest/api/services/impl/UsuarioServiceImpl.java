@@ -4,27 +4,29 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
+import lombok.NoArgsConstructor;
 import py.edu.ucsa.jweb.rest.api.dto.UsuarioDTO;
 
 @Service("usuarioService")
 public class UsuarioServiceImpl {
-	private static final AtomicLong counter=new AtomicLong();
+	private static final AtomicLong counter = new AtomicLong();
 	private static List<UsuarioDTO> usuarios;
 	static {
 		crearUsuariosEnMemoria();
 	}
-	
-	public List<UsuarioDTO> listarTodos(){
+
+	public List<UsuarioDTO> listarTodos() {
 		return usuarios;
 	}
-	
+
 	public UsuarioDTO getById(long id) {
-		for(UsuarioDTO user : usuarios) {
-			if(user.getId() == id) {
+		for (UsuarioDTO user : usuarios) {
+			if (user.getId() == id) {
 				return user;
 			}
 		}
@@ -32,59 +34,87 @@ public class UsuarioServiceImpl {
 	}
 
 	public UsuarioDTO getByUsuario(String usuario) {
-		for(UsuarioDTO u : usuarios) {
-			if(u.getUsuario().equalsIgnoreCase(usuario)){
-				return u;
+		if (Objects.nonNull(usuario)){
+			for (UsuarioDTO u : usuarios) {
+				if (u.getUsuario().equalsIgnoreCase(usuario)) {
+					return u;
+				}
 			}
 		}
+	
 		return null;
 	}
-	
+
 	public void crearUsuario(UsuarioDTO usuario) {
 		usuario.setId(counter.incrementAndGet());
 		usuarios.add(usuario);
-		
+
 	}
-	
+
 	public void actualizarUsuario(UsuarioDTO usuario) {
 		int index = usuarios.indexOf(usuario);
-		usuarios.set(index, usuario);		
+		usuarios.set(index, usuario);
 	}
-	
+
 	public void eliminarUsuarioById(long id) {
-		for(Iterator<UsuarioDTO> iterator = usuarios.iterator(); iterator.hasNext();) {
-			UsuarioDTO u = iterator.next();		
-			if(u.getId()==id) {
+		for (Iterator<UsuarioDTO> iterator = usuarios.iterator(); iterator.hasNext();) {
+			UsuarioDTO u = iterator.next();
+			if (u.getId() == id) {
 				iterator.remove();
 			}
 		}
 	}
-	
+
 	public boolean isExisteUsuario(UsuarioDTO usuario) {
-		return getByUsuario(usuario.getUsuario())!=null;
-	}
-	
-	public void eliminarTodos(){
-		usuarios.clear();
-	}
-	
-	public static List<UsuarioDTO> crearUsuariosEnMemoria(){
-		List<UsuarioDTO> usuarios = new ArrayList<>();
-		usuarios.add(new UsuarioDTO(counter.incrementAndGet(),"jsanchez","jsanchez@gmail.com","123","JUAN","SANCHEZ",true,false,false,LocalDateTime.now()));
-		usuarios.add(new UsuarioDTO(counter.incrementAndGet(),"aslachevsky","aslachevsky@gmail.com","123","ANDY","SLACHEVSKY",true,false,false,LocalDateTime.now()));
-		return usuarios;
-//		private Long id;
-//		private String usuario;
-//		private String email;
-//		private String clave;
-//		private String nombres;
-//		private String apellidos;
-		
-//		private Boolean habilitado;
-//		private Boolean cuenta_bloqueada;
-//		private Boolean cuenta_expirada;
-//		private LocalDateTime fechaCreacion;
+		return getByUsuario(usuario.getUsuario()) != null;
 	}
 
+	public void eliminarTodos() {
+		usuarios.clear();
+	}
+
+	public static List<UsuarioDTO> crearUsuariosEnMemoria(){
+		List<UsuarioDTO> usuarios = new ArrayList<>();
+//METODO 1: con el @AllArgsConstructor en el DTO, se deben pasar todos los argumentos para la inserción
+		
+		usuarios.add(new UsuarioDTO(counter.incrementAndGet(),"jsanchez","jsanchez@gmail.com","123","JUAN","SANCHEZ",true,false,false,LocalDateTime.now()));
+		usuarios.add(new UsuarioDTO(counter.incrementAndGet(),"aslachevsky","aslachevsky@gmail.com","123","ANDY","SLACHEVSKY",true,false,false,LocalDateTime.now()));
 	
+//METODO 2: CON BUILDER
+		
+		usuarios.add(UsuarioDTO.builder()
+							.id(counter.incrementAndGet())
+							.usuario("pgonzalez")
+							.email("pgonzalez@gmail.com")
+							.clave("123")
+							.nombres("PEDRO")
+							.apellidos("GONZALEZ")
+							.habilitado(true)
+							.cuenta_bloqueada(false)
+							.cuenta_expirada(false)
+							.fechaCreacion(LocalDateTime.now())
+							.build());
+		
+//METODO 3: 
+//	Los getters y setters se generaron con la anotación @Data en el DTO
+//	y el constructor con el @NoArgsConstructor
+		UsuarioDTO dto = new UsuarioDTO();
+		dto.setId(counter.incrementAndGet());
+		dto.setUsuario("jfernandez");
+		dto.setEmail("jfernandez@gmail.com");
+		dto.setClave("123");
+		dto.setNombres("JOSE");
+		dto.setApellidos("FERNANDEZ");
+		dto.setHabilitado(true);
+		dto.setCuenta_bloqueada(false);
+		dto.setCuenta_expirada(false);
+		dto.setFechaCreacion(LocalDateTime.now());
+		usuarios.add(dto);
+
+return usuarios;
+		
+		
+		
+	}
+
 }

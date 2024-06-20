@@ -4,7 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = {"py.edu.ucsa.jweb.rest.api.controllers"})
+@SpringBootApplication(scanBasePackages = {"py.edu.ucsa.jweb.rest.api.controllers",
+											"py.edu.ucsa.jweb.rest.api.core.services"})
 @EnableAutoConfiguration
 public class Application {
 
