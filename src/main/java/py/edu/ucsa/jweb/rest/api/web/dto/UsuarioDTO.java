@@ -1,4 +1,4 @@
-package py.edu.ucsa.jweb.rest.api.dto;
+package py.edu.ucsa.jweb.rest.api.web.dto;
 
 import java.time.LocalDateTime;
 
@@ -19,8 +19,8 @@ public class UsuarioDTO {
 	private String nombres;
 	private String apellidos;
 	private Boolean habilitado;
-	private Boolean cuenta_bloqueada;
-	private Boolean cuenta_expirada;
+	private Boolean cuentaBloqueada;
+	private Boolean cuentaExpirada;
 	private LocalDateTime fechaCreacion;
 /*
 	public Integer getId() {

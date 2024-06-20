@@ -1,4 +1,4 @@
-package py.edu.ucsa.jweb.rest.api.services.impl;
+package py.edu.ucsa.jweb.rest.api.core.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,21 +9,23 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
-import lombok.NoArgsConstructor;
-import py.edu.ucsa.jweb.rest.api.dto.UsuarioDTO;
+import py.edu.ucsa.jweb.rest.api.core.services.UsuarioService;
+import py.edu.ucsa.jweb.rest.api.web.dto.UsuarioDTO;
 
-@Service("usuarioService")
-public class UsuarioServiceImpl {
+@Service("UsuarioService")
+public class UsuarioServiceImpl implements UsuarioService{
 	private static final AtomicLong counter = new AtomicLong();
 	private static List<UsuarioDTO> usuarios;
 	static {
-		crearUsuariosEnMemoria();
+		usuarios = crearUsuariosEnMemoria();
 	}
 
+	@Override
 	public List<UsuarioDTO> listarTodos() {
 		return usuarios;
 	}
 
+	@Override
 	public UsuarioDTO getById(long id) {
 		for (UsuarioDTO user : usuarios) {
 			if (user.getId() == id) {
@@ -33,6 +35,7 @@ public class UsuarioServiceImpl {
 		return null;
 	}
 
+	@Override
 	public UsuarioDTO getByUsuario(String usuario) {
 		if (Objects.nonNull(usuario)){
 			for (UsuarioDTO u : usuarios) {
@@ -45,18 +48,21 @@ public class UsuarioServiceImpl {
 		return null;
 	}
 
+	@Override
 	public void crearUsuario(UsuarioDTO usuario) {
 		usuario.setId(counter.incrementAndGet());
 		usuarios.add(usuario);
 
 	}
 
+	@Override
 	public void actualizarUsuario(UsuarioDTO usuario) {
 		int index = usuarios.indexOf(usuario);
 		usuarios.set(index, usuario);
 	}
 
-	public void eliminarUsuarioById(long id) {
+	@Override
+	public void eliminarUsuario(long id) {
 		for (Iterator<UsuarioDTO> iterator = usuarios.iterator(); iterator.hasNext();) {
 			UsuarioDTO u = iterator.next();
 			if (u.getId() == id) {
@@ -65,13 +71,16 @@ public class UsuarioServiceImpl {
 		}
 	}
 
+	@Override
 	public boolean isExisteUsuario(UsuarioDTO usuario) {
-		return getByUsuario(usuario.getUsuario()) != null;
+		return Objects.nonNull(getByUsuario(usuario.getUsuario()));
 	}
 
+	@Override
 	public void eliminarTodos() {
 		usuarios.clear();
 	}
+
 
 	public static List<UsuarioDTO> crearUsuariosEnMemoria(){
 		List<UsuarioDTO> usuarios = new ArrayList<>();
@@ -90,8 +99,8 @@ public class UsuarioServiceImpl {
 							.nombres("PEDRO")
 							.apellidos("GONZALEZ")
 							.habilitado(true)
-							.cuenta_bloqueada(false)
-							.cuenta_expirada(false)
+							.cuentaBloqueada(false)
+							.cuentaExpirada(false)
 							.fechaCreacion(LocalDateTime.now())
 							.build());
 		
@@ -106,8 +115,8 @@ public class UsuarioServiceImpl {
 		dto.setNombres("JOSE");
 		dto.setApellidos("FERNANDEZ");
 		dto.setHabilitado(true);
-		dto.setCuenta_bloqueada(false);
-		dto.setCuenta_expirada(false);
+		dto.setCuentaBloqueada(false);
+		dto.setCuentaExpirada(false);
 		dto.setFechaCreacion(LocalDateTime.now());
 		usuarios.add(dto);
 

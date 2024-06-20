@@ -1,4 +1,4 @@
-package py.edu.ucsa.jweb.rest.api.dto;
+package py.edu.ucsa.jweb.rest.api.web.dto;
 
 public class ErrorDTO {
 	private String mensajeError;
