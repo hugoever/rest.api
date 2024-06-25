@@ -6,12 +6,12 @@ import py.edu.ucsa.jweb.rest.api.web.dto.UsuarioDTO;
 
 public interface UsuarioService {
 	
+	List<UsuarioDTO> listarTodos();
 	UsuarioDTO getById(long Id);
 	UsuarioDTO getByUsuario(String usuario);
 	void crearUsuario(UsuarioDTO usuario);
 	void actualizarUsuario(UsuarioDTO usuario);
 	void eliminarUsuario(long id);
-	List<UsuarioDTO> listarTodos();
 	void eliminarTodos();
 	boolean isExisteUsuario(UsuarioDTO usuario);
 

@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,8 +38,15 @@ public class UsuarioController {
 		return ResponseEntity.ok(dto);
 	}
 	
+	
+	@GetMapping("/{usuario}/usuario")
+	public ResponseEntity<?> getByUsuario(@PathVariable("usuario") String usuario){
+		UsuarioDTO dto = usuarioService.getByUsuario(usuario);
+		return ResponseEntity.ok(dto);
+	}
+	
 	@GetMapping
-	public ResponseEntity<?> listar(){
+	public ResponseEntity<?> listarTodos(){
 		List<UsuarioDTO> dto = usuarioService.listarTodos();
 		return ResponseEntity.ok(dto);
 	}
@@ -55,11 +63,12 @@ public class UsuarioController {
 		}
 		usuarioService.crearUsuario(usuario);
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/usuario/{id}").buildAndExpand(usuario.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri());
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
 	
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	
+	@PutMapping("{id}")
 	public ResponseEntity<?> actualizarUsuario(@PathVariable("id") long id, @RequestBody UsuarioDTO usuario){
 		logger.info("Actualizando el Usuario con id {}", id);
 		UsuarioDTO usuarioBD = usuarioService.getById(id);
@@ -82,6 +91,25 @@ public class UsuarioController {
 			return new ResponseEntity<UsuarioDTO>(usuarioBD, HttpStatus.OK);
 		}
 	
+	@DeleteMapping("{id}")
+	public ResponseEntity<?> eliminarUsuario(@PathVariable("id") long id){
+		logger.info("Eliminación de Usuario con el id {}", id);
+		UsuarioDTO usuarioBD = usuarioService.getById(id);
+		if(usuarioBD == null) {
+			logger.error("Eliminación fallida. No existe el usuario con el id {}",id);
+			return new ResponseEntity<ErrorDTO>(
+					new ErrorDTO("Eliminación fallida. No existe el usaurio con el id "+
+							id), HttpStatus.NOT_FOUND);
+					
+		}
+		
+		String usuarioEliminado = usuarioBD.getUsuario();
+		usuarioService.eliminarUsuario(id);
+		
+		return new ResponseEntity<ErrorDTO>(
+				new ErrorDTO("El usuario: "+
+						usuarioEliminado +" fué eliminado exitósamente."),HttpStatus.NOT_FOUND);
 	
+	}
 
 }
