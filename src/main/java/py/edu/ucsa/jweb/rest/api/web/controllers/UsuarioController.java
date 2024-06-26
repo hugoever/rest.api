@@ -108,8 +108,16 @@ public class UsuarioController {
 		
 		return new ResponseEntity<ErrorDTO>(
 				new ErrorDTO("El usuario: "+
-						usuarioEliminado +" fué eliminado exitósamente."),HttpStatus.NOT_FOUND);
+						usuarioEliminado +" fué eliminado exitósamente."),HttpStatus.OK);
 	
+	}
+	
+	@DeleteMapping("/eliminarTodos")
+	public ResponseEntity<?> eliminarTodos(){
+		logger.info("Eliminación de todos los Usuarios");
+		usuarioService.eliminarTodos();
+		return new ResponseEntity<ErrorDTO>(
+				new ErrorDTO("Se eliminaron todos los usuarios"),HttpStatus.OK);
 	}
 
 }
