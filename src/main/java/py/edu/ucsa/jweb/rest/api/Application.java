@@ -3,10 +3,13 @@ package py.edu.ucsa.jweb.rest.api;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 
 @SpringBootApplication(scanBasePackages = {"py.edu.ucsa.jweb.rest.api.web.controllers",
-										   "py.edu.ucsa.jweb.rest.api.core.services"})
+										   "py.edu.ucsa.jweb.rest.api.core.services",
+										   "py.edu.ucsa.jweb.rest.api.core.dao"})
 @EnableAutoConfiguration
+@Import(JpaConfiguration.class)
 public class Application {
 
 	public static void main(String[] args) {
