@@ -1,52 +1,77 @@
 package py.edu.ucsa.jweb.rest.api.core.dao.impl;
 
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.stereotype.Repository;
+
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.UsuarioDao;
 import py.edu.ucsa.jweb.rest.api.core.entities.Usuario;
 
+@Repository("UsuarioDao")
 public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements UsuarioDao {
 
 	@Override
 	public Usuario getById(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getById(id);
 	}
-
+	
+//Método que devuelve un usuario por su nombre de usuario si lo encuentra, 
+//caso contrario devuelve null		
 	@Override
 	public Usuario getByUsuario(String usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+		Query q = getEntityManager().createQuery("select u from Usuario u where u.usuario = :usu");
+		q.setParameter("usu", usuario);
+		Usuario u = (Usuario) q.getSingleResult();
+		return u;
+		} catch (NoResultException e) {
+			
+			return null;
+		}
 	}
 
 	@Override
 	public void persistir(Usuario usu) {
-		// TODO Auto-generated method stub
+		super.persistir(usu);
 
 	}
 	
 	@Override
 	public void actualizar(Usuario usu) {
-		// TODO Auto-generated method stub
+		super.actualizar(usu);
 
 	}
 	
 	@Override
 	public void borrarPorId(int id) {
-		// TODO Auto-generated method stub
+		super.eliminar(id);
+//		Usuario usuParaBorrar = this.getById(id);
+//		if(Objects.nonNull(usuParaBorrar)) {
+//			super.eliminar(usuParaBorrar);
+//		}
 		
 	}
 
 	@Override
 	public void borrarPorUsuario(String usuario) {
-		// TODO Auto-generated method stub
+		Usuario usuParaBorrar = this.getByUsuario(usuario);
+		if(Objects.nonNull(usuParaBorrar)) {
+			super.eliminar(usuParaBorrar);
+		}
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Usuario> listar(){
-		return null;
+//		return super.listar(); //otra forma ya que esta declarado en la clase abstracta
+		Query q = this.getEntityManager().createNamedQuery("Usuario.findAll");
+		List<Usuario> resultado = (List<Usuario>)q.getResultList();
+		return resultado;
 	}
 
 }
