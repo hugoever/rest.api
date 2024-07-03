@@ -35,14 +35,14 @@ public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements Usu
 	}
 
 	@Override
-	public void persistir(Usuario usu) {
-		super.persistir(usu);
+	public Usuario persistir(Usuario usu) {
+		return super.persistir(usu);
 
 	}
 	
 	@Override
-	public void actualizar(Usuario usu) {
-		super.actualizar(usu);
+	public Usuario actualizar(Usuario usu) {
+		return super.actualizar(usu);
 
 	}
 	

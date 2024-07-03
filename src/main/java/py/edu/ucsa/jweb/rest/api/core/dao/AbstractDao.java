@@ -47,12 +47,12 @@ public abstract class AbstractDao<PK extends Serializable,T> implements GenericD
 		return (T)this.entityManager.find(persistentClass, id);
 	}
 	
-	public void persistir(T entity) {
-		this.entityManager.persist(entity);
+	public T persistir(T entity) {
+		return this.entityManager.merge(entity);
 	}
 	
-	public void actualizar(T entity) {
-		this.entityManager.merge(entity);
+	public T actualizar(T entity) {
+		return this.entityManager.merge(entity);
 	}
 	
 	public void eliminar(T entity) {

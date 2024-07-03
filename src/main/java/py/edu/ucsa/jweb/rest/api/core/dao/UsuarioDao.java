@@ -8,8 +8,8 @@ public interface UsuarioDao extends GenericDao<Integer, Usuario> {
 	
 	Usuario getById(int id);
 	Usuario getByUsuario(String usuario);
-	void persistir(Usuario usu);
-	void actualizar(Usuario usu);
+	Usuario persistir(Usuario usu);
+	Usuario actualizar(Usuario usu);
 	void borrarPorId(int id);
 	void borrarPorUsuario(String usuario);
 	List<Usuario> listar();

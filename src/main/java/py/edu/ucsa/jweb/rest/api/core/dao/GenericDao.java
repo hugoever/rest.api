@@ -6,8 +6,8 @@ import java.util.List;
 public interface GenericDao<PK extends Serializable, T> {
 	List<T> listar();
 	T getById(PK id);
-	public void persistir(T entity);
-	public void actualizar(T entity);
+	T persistir(T entity);
+	public T actualizar(T entity);
 	void eliminar(T entity);
 	void eliminar(PK id);
 
