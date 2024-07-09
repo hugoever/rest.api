@@ -6,10 +6,12 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -22,8 +24,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
+@EntityScan("py.edu.ucsa.jweb.rest.api.core.entities") // Escanea las entidades en este paquete
+@EnableJpaRepositories(basePackages = "py.edu.ucsa.jweb.rest.api.core.entities")
 @EnableTransactionManagement
-@PropertySource(value="classpath.application.properties")
+@PropertySource(value="classpath:application.properties")
 public class JpaConfiguration {
 	
 	@Autowired
@@ -52,8 +56,9 @@ public class JpaConfiguration {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws NamingException{
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
 		bean.setDataSource(dataSource());
-		bean.setPackagesToScan("py.edu.ucsa.jweb.rest.api.core.api");
+		bean.setPackagesToScan("py.edu.ucsa.jweb.rest.api.core.entities");
 		bean.setJpaVendorAdapter(jpaVendorAdapter());
+		bean.setJpaProperties(jpaProperties());
 		return bean;
 	}
 	

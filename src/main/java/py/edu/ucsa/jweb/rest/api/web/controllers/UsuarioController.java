@@ -1,10 +1,11 @@
 package py.edu.ucsa.jweb.rest.api.web.controllers;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,50 +19,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import py.edu.ucsa.jweb.rest.api.core.entities.Usuario;
 import py.edu.ucsa.jweb.rest.api.core.services.UsuarioService;
 import py.edu.ucsa.jweb.rest.api.web.dto.ErrorDTO;
-import py.edu.ucsa.jweb.rest.api.web.dto.UsuarioDTO;
 
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("usuarios")
 public class UsuarioController {
 	
 	@Autowired
+	@Qualifier("usuarioService")
 	private UsuarioService usuarioService;
 	
     private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 	
 	@GetMapping("{id}")
-	public ResponseEntity<?> getById(@PathVariable("id") Long id){
-		UsuarioDTO dto = usuarioService.getById(id);
+	public ResponseEntity<?> getById(@PathVariable("id") Integer id){
+		Usuario dto = usuarioService.getById(id);
 		return ResponseEntity.ok(dto);
+	}	
+	
+	
+	@GetMapping
+	public ResponseEntity<?> listar(){
+		return ResponseEntity.ok(usuarioService.listar());
 	}
+	
 	
 	
 	@GetMapping("/{usuario}/usuario")
 	public ResponseEntity<?> getByUsuario(@PathVariable("usuario") String usuario){
-		UsuarioDTO dto = usuarioService.getByUsuario(usuario);
+		Usuario dto = usuarioService.getByUsuario(usuario);
 		return ResponseEntity.ok(dto);
 	}
 	
-	@GetMapping
-	public ResponseEntity<?> listarTodos(){
-		List<UsuarioDTO> dto = usuarioService.listarTodos();
-		return ResponseEntity.ok(dto);
-	}
-	
+//	@GetMapping
+//	public ResponseEntity<?> listarTodos(){
+//		List<Usuario> dto = usuarioService.listar();
+//
+//		return ResponseEntity.ok(dto);
+//	}
+//	
 	@PostMapping
-	public ResponseEntity<?> crearUsuario(@RequestBody UsuarioDTO usuario, UriComponentsBuilder ucBuilder){
+	public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario, UriComponentsBuilder ucBuilder){
 		logger.info("Creando el Usuario : {}", usuario);
-		if(usuarioService.isExisteUsuario(usuario)) {
+		if(usuarioService.isExisteUsuario(usuario.getUsuario())) {
 			logger.error("Inserción fallida. Ya existe un registro con el usuario {}", usuario.getUsuario());
 			
 			return new ResponseEntity<ErrorDTO>(new ErrorDTO(
 					"Inserción Fallida. Ya existe un registro con el usuario"+
 						usuario.getUsuario()), HttpStatus.CONFLICT);
 		}
-		usuarioService.crearUsuario(usuario);
+		usuarioService.persistir(usuario);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(ucBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri());
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -69,32 +79,33 @@ public class UsuarioController {
 	
 	
 	@PutMapping("{id}")
-	public ResponseEntity<?> actualizarUsuario(@PathVariable("id") long id, @RequestBody UsuarioDTO usuario){
+	public ResponseEntity<?> actualizarUsuario(@PathVariable("id") Integer id, @RequestBody Usuario usuario){
 		logger.info("Actualizando el Usuario con id {}", id);
-		UsuarioDTO usuarioBD = usuarioService.getById(id);
-		if(usuarioBD == null) {
+		Usuario usuarioBD = usuarioService.getById(id);
+		if(Objects.isNull(usuarioBD)) {
 			logger.error("Actualización fallida. No existe el usuario con el id {}",id);
 			return new ResponseEntity<ErrorDTO>(
 				new ErrorDTO("Actualización fallida. No existe el usuario con el id "+ 
 						id), HttpStatus.NOT_FOUND);
 				
 			}
-			usuarioBD.setApellidos(usuario.getApellidos());
-			usuarioBD.setClave(usuario.getClave());
-			usuarioBD.setCuentaBloqueada(usuario.getCuentaBloqueada());
-			usuarioBD.setCuentaExpirada(usuario.getCuentaExpirada());
-			usuarioBD.setEmail(usuario.getEmail());
-			usuarioBD.setFechaCreacion(usuario.getFechaCreacion());
-			usuarioBD.setHabilitado(usuario.getHabilitado());
-			usuarioService.actualizarUsuario(usuarioBD);
+//			usuarioBD.setApellidos(usuario.getApellidos());
+//			usuarioBD.setClave(usuario.getClave());
+//			usuarioBD.setCuentaBloqueada(usuario.getCuentaBloqueada());
+//			usuarioBD.setCuentaExpirada(usuario.getCuentaExpirada());
+//			usuarioBD.setEmail(usuario.getEmail());
+//			usuarioBD.setFechaCreacion(usuario.getFechaCreacion());
+//			usuarioBD.setHabilitado(usuario.getHabilitado());
+			usuarioService.actualizar(usuario);
 			
-			return new ResponseEntity<UsuarioDTO>(usuarioBD, HttpStatus.OK);
+			return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
 		}
 	
 	@DeleteMapping("{id}")
-	public ResponseEntity<?> eliminarUsuario(@PathVariable("id") long id){
+	public ResponseEntity<?> eliminarUsuario(@PathVariable("id") Integer id){
 		logger.info("Eliminación de Usuario con el id {}", id);
-		UsuarioDTO usuarioBD = usuarioService.getById(id);
+		Usuario usuarioBD = usuarioService.getById(id);
+				
 		if(usuarioBD == null) {
 			logger.error("Eliminación fallida. No existe el usuario con el id {}",id);
 			return new ResponseEntity<ErrorDTO>(
@@ -104,7 +115,7 @@ public class UsuarioController {
 		}
 		
 		String usuarioEliminado = usuarioBD.getUsuario();
-		usuarioService.eliminarUsuario(id);
+		usuarioService.eliminar(usuarioBD);
 		
 		return new ResponseEntity<ErrorDTO>(
 				new ErrorDTO("El usuario: "+
@@ -112,12 +123,12 @@ public class UsuarioController {
 	
 	}
 	
-	@DeleteMapping("/eliminarTodos")
-	public ResponseEntity<?> eliminarTodos(){
-		logger.info("Eliminación de todos los Usuarios");
-		usuarioService.eliminarTodos();
-		return new ResponseEntity<ErrorDTO>(
-				new ErrorDTO("Se eliminaron todos los usuarios"),HttpStatus.OK);
-	}
+//	@DeleteMapping("/eliminarTodos")
+//	public ResponseEntity<?> eliminarTodos(){
+//		logger.info("Eliminación de todos los Usuarios");
+//		usuarioService..eliminarTodos();
+//		return new ResponseEntity<ErrorDTO>(
+//				new ErrorDTO("Se eliminaron todos los usuarios"),HttpStatus.OK);
+//	}
 
 }

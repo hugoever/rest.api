@@ -1,7 +1,15 @@
 package py.edu.ucsa.jweb.rest.api.core.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 
 
 /**

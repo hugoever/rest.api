@@ -1,6 +1,5 @@
 package py.edu.ucsa.jweb.rest.api.core.dao.impl;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Repository;
@@ -11,13 +10,10 @@ import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.UsuarioDao;
 import py.edu.ucsa.jweb.rest.api.core.entities.Usuario;
 
-@Repository("UsuarioDao")
+@Repository("usuarioDao")
 public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements UsuarioDao {
 
-	@Override
-	public Usuario getById(int id) {
-		return super.getById(id);
-	}
+	
 	
 //Método que devuelve un usuario por su nombre de usuario si lo encuentra, 
 //caso contrario devuelve null		
@@ -34,27 +30,23 @@ public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements Usu
 		}
 	}
 
-	@Override
-	public Usuario persistir(Usuario usu) {
-		return super.persistir(usu);
-
-	}
 	
-	@Override
-	public Usuario actualizar(Usuario usu) {
-		return super.actualizar(usu);
-
-	}
+//	
+//	@Override
+//	public Usuario actualizar(Usuario usu) {
+//		return super.actualizar(usu);
+//
+//	}
 	
-	@Override
-	public void borrarPorId(int id) {
-		super.eliminar(id);
-//		Usuario usuParaBorrar = this.getById(id);
-//		if(Objects.nonNull(usuParaBorrar)) {
-//			super.eliminar(usuParaBorrar);
-//		}
-		
-	}
+//	@Override
+//	public void borrarPorId(int id) {
+//		super.eliminar(id);
+////		Usuario usuParaBorrar = this.getById(id);
+////		if(Objects.nonNull(usuParaBorrar)) {
+////			super.eliminar(usuParaBorrar);
+////		}
+//		
+//	}
 
 	@Override
 	public void borrarPorUsuario(String usuario) {
@@ -65,13 +57,13 @@ public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements Usu
 
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Usuario> listar(){
-//		return super.listar(); //otra forma ya que esta declarado en la clase abstracta
-		Query q = this.getEntityManager().createNamedQuery("Usuario.findAll");
-		List<Usuario> resultado = (List<Usuario>)q.getResultList();
-		return resultado;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	public List<Usuario> listar(){
+////		return super.listar(); //otra forma ya que esta declarado en la clase abstracta
+//		Query q = this.getEntityManager().createNamedQuery("Usuario.findAll");
+//		List<Usuario> resultado = (List<Usuario>)q.getResultList();
+//		return resultado;
+//	}
 
 }
