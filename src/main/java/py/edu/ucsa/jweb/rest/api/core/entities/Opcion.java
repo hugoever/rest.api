@@ -19,6 +19,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="opciones")
 @NamedQuery(name="Opcion.findAll", query="SELECT o FROM Opcion o")
+@NamedQuery(name="Opcion.getOpcionesByCodDominio", query="SELECT o FROM Opcion o WHERE o.dominio.codigo = :codigoDominio")
+@NamedQuery(name="Opcion.getOpcionesByCodigoYCodDominio", query="SELECT o FROM Opcion o WHERE o.codigo = :codigoOpcion AND o.dominio.codigo = :codigoDominio")
 public class Opcion implements Serializable {
 	private static final long serialVersionUID = 1L;
 
