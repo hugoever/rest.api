@@ -2,17 +2,20 @@ package py.edu.ucsa.jweb.rest.api.core.dao.impl;
 
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.OpcionDao;
 import py.edu.ucsa.jweb.rest.api.core.entities.Opcion;
 
+@Repository("opcionDaoImpl")
 public class OpcionDaoImpl extends AbstractDao<Integer, Opcion> implements OpcionDao {
 
 	
 	@Override
 	public List<Opcion> getOpcionesByCodDominio(String codDominio) {
-		Query q = this.getEntityManager().createQuery("Opcion.getOpcionesByCodDominio");
+		Query q = this.getEntityManager().createNamedQuery("Opcion.getOpcionesByCodDominio");
 		q.setParameter("codigoDominio", codDominio);
 		List<Opcion> resultado = q.getResultList();
 		return resultado;
@@ -20,7 +23,7 @@ public class OpcionDaoImpl extends AbstractDao<Integer, Opcion> implements Opcio
 
 	@Override
 	public Opcion getOpcionesByCodigoYCodDominio(String codOpcion, String codDominio) {
-		Query q = this.getEntityManager().createQuery("Opcion.getOpcionesByCodigoYCodDominio");
+		Query q = this.getEntityManager().createNamedQuery("Opcion.getOpcionesByCodigoYCodDominio");
 		q.setParameter("codigoOpcion", codOpcion);
 		q.setParameter("codigoDominio", codDominio);
 		Opcion resultado = (Opcion) q.getSingleResult();

@@ -9,5 +9,5 @@ public interface GenericService<PK,T>{
 	T persistir(T entity);
 	T actualizar(T entity);
 	void eliminar(T entity);
-	boolean isExisteUsuario(String usuario);
+//	boolean isExisteUsuario(String usuario);
 }

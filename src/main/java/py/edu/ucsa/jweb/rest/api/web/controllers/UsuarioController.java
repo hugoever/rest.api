@@ -119,7 +119,7 @@ public class UsuarioController {
 		
 		return new ResponseEntity<ErrorDTO>(
 				new ErrorDTO("El usuario: "+
-						usuarioEliminado +" fué eliminado exitósamente."),HttpStatus.OK);
+						usuarioEliminado +" fué eliminado exitosamente."),HttpStatus.OK);
 	
 	}
 	
