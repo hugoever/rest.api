@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.OpcionDao;
@@ -23,11 +24,15 @@ public class OpcionDaoImpl extends AbstractDao<Integer, Opcion> implements Opcio
 
 	@Override
 	public Opcion getOpcionesByCodigoYCodDominio(String codOpcion, String codDominio) {
-		Query q = this.getEntityManager().createNamedQuery("Opcion.getOpcionesByCodigoYCodDominio");
-		q.setParameter("codigoOpcion", codOpcion);
-		q.setParameter("codigoDominio", codDominio);
-		Opcion resultado = (Opcion) q.getSingleResult();
-		return resultado;
-	}
+		 try {
+	            Query q = this.getEntityManager().createNamedQuery("Opcion.getOpcionesByCodigoYCodDominio");
+	            q.setParameter("codigoOpcion", codOpcion);
+	            q.setParameter("codigoDominio", codDominio);
+	            return (Opcion) q.getSingleResult();
+	        } catch (NoResultException e) {
+	            return null; // Manejar el caso donde no se encuentra la opción
+	        }
+	    }
+	
 
 }

@@ -8,5 +8,6 @@ public interface OpcionService extends GenericService<Integer, Opcion> {
 
 	public List<Opcion> getOpcionesByCodDominio(String codDominio);
 	public Opcion getOpcionesByCodigoYCodDominio(String codOpcion, String codDominio);
+	public boolean isExisteOpcion(String codOpcion, String codDominio);
 	
 }

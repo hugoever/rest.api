@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.persistence.NoResultException;
 import py.edu.ucsa.jweb.rest.api.core.entities.Opcion;
 import py.edu.ucsa.jweb.rest.api.core.services.OpcionService;
 import py.edu.ucsa.jweb.rest.api.web.dto.ErrorDTO;
@@ -46,12 +47,21 @@ public class OpcionController {
 	
 	@PostMapping
 	public ResponseEntity<?> crearOpcion(@RequestBody Opcion opcion, UriComponentsBuilder ucBuilder){
-		logger.info("Creando Opción: {}", opcion);
+		logger.info("Creando la opción : {}", opcion);
+		if(opcionService.isExisteOpcion(opcion.getCodigo(),opcion.getDominio().getCodigo())) {
+			logger.error("Inserción fallida. Ya existe un registro con la código {} y el dominio {}", 
+					opcion.getCodigo(), opcion.getDominio().getCodigo());
+			
+			return new ResponseEntity<ErrorDTO>(new ErrorDTO(
+					"Inserción Fallida. Ya existe un registro con el código"+
+						opcion.getCodigo() + " y el dominio" + opcion.getDominio().getCodigo()), HttpStatus.CONFLICT);
+		}
 		opcionService.persistir(opcion);
-		HttpHeaders header = new HttpHeaders();
-		header.setLocation(ucBuilder.path("/opciones/{id}").buildAndExpand(opcion.getId()).toUri());
-		return new ResponseEntity<String>(header, HttpStatus.CREATED);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setLocation(ucBuilder.path("/opciones/{id}").buildAndExpand(opcion.getId()).toUri());
+		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
+
 	
 	@PutMapping("{id}")
 	public ResponseEntity<?> actualizarOpcion(@PathVariable("id") Integer id, @RequestBody Opcion opcion){
@@ -69,7 +79,7 @@ public class OpcionController {
 		
 		}
 	
-	@DeleteMapping("{id}")
+	@DeleteMapping("/eliminaropcion/{id}")
 	public ResponseEntity<?> eliminarOpcion(@PathVariable("id") Integer id){
 		logger.info("Eliminando la opción con el id: {}", id);
 		Opcion opcionBD = opcionService.getById(id);
@@ -96,7 +106,11 @@ public class OpcionController {
 	
 	@GetMapping("/porcodigoydominio/{codigo}/{dominio}")
 	public ResponseEntity<?> getOpcionesByCodigoYCodDominio(@PathVariable("codigo") String codigo, @PathVariable("dominio") String dominio){
-		return ResponseEntity.ok(opcionService.getOpcionesByCodigoYCodDominio(codigo, dominio));
+		 try {
+	            return ResponseEntity.ok(opcionService.getOpcionesByCodigoYCodDominio(codigo, dominio));
+	        } catch (NoResultException e) {
+	            return new ResponseEntity<>(new ErrorDTO("No se encontró ninguna opción con el código y dominio proporcionados"), HttpStatus.NOT_FOUND);
+	        }
 	}
 	
 
