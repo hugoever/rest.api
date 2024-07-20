@@ -21,6 +21,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="socios")
 @NamedQuery(name="Socio.findAll", query="SELECT s FROM Socio s")
+@NamedQuery(name="Socio.getSocioByNroSocio", query="SELECT s FROM Socio s WHERE s.nroSocio = :nroSocio")
+@NamedQuery(name="Socio.getSocioByNroCedula", query="SELECT s FROM Socio s WHERE s.nroCedula = :nroCedula")
+@NamedQuery(name="Socio.getSocioById", query="SELECT s FROM Socio s WHERE s.id = :id")
 public class Socio implements Serializable {
 	private static final long serialVersionUID = 1L;
 

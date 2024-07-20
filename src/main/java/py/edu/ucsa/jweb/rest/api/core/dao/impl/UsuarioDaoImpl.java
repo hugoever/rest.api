@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.UsuarioDao;
@@ -26,6 +27,8 @@ public class UsuarioDaoImpl extends AbstractDao<Integer, Usuario> implements Usu
 		return u;
 		} catch (NoResultException e) {
 			
+			return null;
+		} catch (NonUniqueResultException e) {
 			return null;
 		}
 	}

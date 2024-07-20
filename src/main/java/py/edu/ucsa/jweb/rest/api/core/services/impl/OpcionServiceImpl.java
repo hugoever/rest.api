@@ -12,6 +12,7 @@ import py.edu.ucsa.jweb.rest.api.core.entities.Opcion;
 import py.edu.ucsa.jweb.rest.api.core.services.OpcionService;
 
 @Service("opcionService")
+@Transactional
 public class OpcionServiceImpl implements OpcionService {
 
 	@Autowired
@@ -30,21 +31,18 @@ public class OpcionServiceImpl implements OpcionService {
 	}
 
 	@Override
-	@Transactional
 	public Opcion persistir(Opcion entity) {
 		Opcion insertado = opcionDao.persistir(entity);
 		return insertado;
 	}
 
 	@Override
-	@Transactional
 	public Opcion actualizar(Opcion entity) {
 		Opcion actualizado = opcionDao.persistir(entity);
 		return actualizado;
 	}
 
 	@Override
-	@Transactional
 	public void eliminar(Opcion entity) {
 
 		opcionDao.eliminar(entity);

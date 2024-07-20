@@ -56,9 +56,9 @@ public class OpcionController {
 					"Inserción Fallida. Ya existe un registro con el código"+
 						opcion.getCodigo() + " y el dominio" + opcion.getDominio().getCodigo()), HttpStatus.CONFLICT);
 		}
-		opcionService.persistir(opcion);
+		Opcion insertado = opcionService.persistir(opcion);
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/opciones/{id}").buildAndExpand(opcion.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/opciones/{id}").buildAndExpand(insertado.getId()).toUri());
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
 
@@ -74,7 +74,7 @@ public class OpcionController {
 							id), HttpStatus.NOT_FOUND
 					);
 		}
-		opcionService.actualizar(opcionBD);
+		opcionService.actualizar(opcion);
 		return new ResponseEntity<Opcion>(opcion, HttpStatus.OK);
 		
 		}

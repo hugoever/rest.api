@@ -71,9 +71,9 @@ public class UsuarioController {
 					"Inserción Fallida. Ya existe un registro con el usuario"+
 						usuario.getUsuario()), HttpStatus.CONFLICT);
 		}
-		usuarioService.persistir(usuario);
+		Usuario insertado = usuarioService.persistir(usuario);
 		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri());
+		headers.setLocation(ucBuilder.path("/usuarios/{id}").buildAndExpand(insertado.getId()).toUri());
 		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
 	}
 	

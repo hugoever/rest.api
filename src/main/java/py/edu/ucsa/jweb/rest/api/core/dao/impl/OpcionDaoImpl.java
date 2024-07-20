@@ -10,7 +10,7 @@ import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.OpcionDao;
 import py.edu.ucsa.jweb.rest.api.core.entities.Opcion;
 
-@Repository("opcionDaoImpl")
+@Repository("opcionDao")
 public class OpcionDaoImpl extends AbstractDao<Integer, Opcion> implements OpcionDao {
 
 	

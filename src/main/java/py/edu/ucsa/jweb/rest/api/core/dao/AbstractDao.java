@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 
 public abstract class AbstractDao<PK extends Serializable,T> implements GenericDao<PK, T>{
 	private final Class<T> persistentClass;
@@ -48,7 +47,7 @@ public abstract class AbstractDao<PK extends Serializable,T> implements GenericD
 		return (T)this.entityManager.find(persistentClass, id);
 	}
 	
-	@Transactional
+
 	public T persistir(T entity) {
 		return this.entityManager.merge(entity);
 	}
