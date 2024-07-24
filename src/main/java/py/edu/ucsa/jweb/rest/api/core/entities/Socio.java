@@ -2,6 +2,11 @@ package py.edu.ucsa.jweb.rest.api.core.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,6 +17,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import py.edu.ucsa.jweb.rest.api.web.dto.ErrorDTO;
+import py.edu.ucsa.jweb.rest.api.web.validators.Validable;
+import py.edu.ucsa.jweb.rest.api.web.validators.Validador;
 
 
 /**
@@ -24,8 +33,9 @@ import jakarta.persistence.Table;
 @NamedQuery(name="Socio.getSocioByNroSocio", query="SELECT s FROM Socio s WHERE s.nroSocio = :nroSocio")
 @NamedQuery(name="Socio.getSocioByNroCedula", query="SELECT s FROM Socio s WHERE s.nroCedula = :nroCedula")
 @NamedQuery(name="Socio.getSocioById", query="SELECT s FROM Socio s WHERE s.id = :id")
-public class Socio implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class Socio implements Serializable, Validable<Socio> {
+	
+	private static final long serialVersionUID = -3727534982682429692L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -77,6 +87,17 @@ public class Socio implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="id_usuario_creacion")
 	private Usuario usuarioCreacion;
+	
+	@JsonIgnore
+	@Transient
+	private List<Validador<Socio>> validadores;
+
+	public List<Validador<Socio>> getValidadores() {
+		if(Objects.isNull(validadores)) {
+			validadores = new ArrayList<>();
+		}
+		return validadores;
+	}
 
 	public Socio() {
 	}
@@ -207,6 +228,19 @@ public class Socio implements Serializable {
 
 	public void setUsuarioCreacion(Usuario usuarioCreacion) {
 		this.usuarioCreacion = usuarioCreacion;
+	}
+
+	@Override
+	public List<ErrorDTO> validar() {
+		List<ErrorDTO> errores = new ArrayList<>();
+		this.getValidadores().forEach(v -> errores.addAll(v.validar(this)));
+		return errores;
+	}
+
+	@Override
+	public void agregarValidador(Validador<Socio> v) {
+		this.getValidadores().add(v);
+		
 	}
 
 }

@@ -3,6 +3,7 @@ package py.edu.ucsa.jweb.rest.api.core.dao.impl;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.SocioDao;
@@ -39,6 +40,8 @@ public class SocioDaoImpl extends AbstractDao<Integer, Socio> implements SocioDa
 		return (Socio) q.getSingleResult();
 		} catch (NoResultException e) {
             return null; // Manejar el caso donde no se encuentra la opción
-        }
+        } catch (NonUniqueResultException e) {
+       	 return null;
+       }
 	}
 }

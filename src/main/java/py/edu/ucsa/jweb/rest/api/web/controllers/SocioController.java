@@ -1,5 +1,6 @@
 package py.edu.ucsa.jweb.rest.api.web.controllers;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import py.edu.ucsa.jweb.rest.api.core.entities.Socio;
 import py.edu.ucsa.jweb.rest.api.core.services.SocioService;
 import py.edu.ucsa.jweb.rest.api.web.dto.ErrorDTO;
+import py.edu.ucsa.jweb.rest.api.web.validators.impl.SocioValidador;
+import py.edu.ucsa.jweb.rest.api.web.validators.impl.SocioValidadorFechas;
 
 @RestController
 @RequestMapping("socios")
@@ -46,75 +49,80 @@ public class SocioController {
 	@PostMapping
 	public ResponseEntity<?> crearSocio(@RequestBody Socio socio, UriComponentsBuilder ucBuilder) {
 		logger.info("Creando socio: {}", socio);
-		
-			if (socioService.isExisteSocio(socio.getNroSocio())) {
-				logger.error("Ya existe el socio con el número de socio: {}", socio.getNroSocio());
-				return new ResponseEntity<ErrorDTO>(
-						new ErrorDTO("Ya existe el socio con el número de socio: " + socio.getNroSocio()),
-						HttpStatus.CONFLICT);
 
-			} else if (socioService.isExisteSocioPorCedula(socio.getNroCedula())) {
-				logger.error("Ya existe el socio con el número de cédula: {}", socio.getNroCedula());
-				return new ResponseEntity<ErrorDTO>(
-						new ErrorDTO("Ya existe el socio con el número de cédula: " + socio.getNroCedula()),
-						HttpStatus.CONFLICT);
+		if (socioService.isExisteSocio(socio.getNroSocio())) {
+			logger.error("Ya existe el socio con el número de socio: {}", socio.getNroSocio());
+			return new ResponseEntity<ErrorDTO>(
+					new ErrorDTO("Ya existe el socio con el número de socio: " + socio.getNroSocio()),
+					HttpStatus.CONFLICT);
 
-			}else if (socioService.isExisteSocioPorId(socio.getId())) {
-				logger.error("Ya existe el socio con el número de id: {}", socio.getId());
-				return new ResponseEntity<ErrorDTO>(
-						new ErrorDTO("Ya existe el socio con el id: " + socio.getId()),
-						HttpStatus.CONFLICT);
+		} else if (socioService.isExisteSocioPorCedula(socio.getNroCedula())) {
+			logger.error("Ya existe el socio con el número de cédula: {}", socio.getNroCedula());
+			return new ResponseEntity<ErrorDTO>(
+					new ErrorDTO("Ya existe el socio con el número de cédula: " + socio.getNroCedula()),
+					HttpStatus.CONFLICT);
 
-			}
-			
-		
-		Socio insertado = socioService.persistir(socio);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setLocation(ucBuilder.path("/socios/{id}").buildAndExpand(insertado.getId()).toUri());
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		} else if (socioService.isExisteSocioPorId(socio.getId())) {
+			logger.error("Ya existe el socio con el número de id: {}", socio.getId());
+			return new ResponseEntity<ErrorDTO>(new ErrorDTO("Ya existe el socio con el id: " + socio.getId()),
+					HttpStatus.CONFLICT);
+
+		}
+
+		SocioValidador v1 = new SocioValidador();
+		socio.agregarValidador(v1);
+		SocioValidadorFechas v2 = new SocioValidadorFechas();
+		socio.agregarValidador(v2);
+		List<ErrorDTO> errores = socio.validar();
+		if (errores.isEmpty()) {
+			Socio insertado = socioService.persistir(socio);
+			HttpHeaders headers = new HttpHeaders();
+			headers.setLocation(ucBuilder.path("/socios/{id}").buildAndExpand(insertado.getId()).toUri());
+			return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<List<ErrorDTO>>(errores, HttpStatus.CREATED);
+		}
 	}
-	
+
 	@PutMapping("{id}")
-	public ResponseEntity<?> actualizarSocio(@PathVariable("id") Integer id, @RequestBody Socio socio){
+	public ResponseEntity<?> actualizarSocio(@PathVariable("id") Integer id, @RequestBody Socio socio) {
 		logger.info("Actualizando socio: {}", id);
 		Socio socioBD = socioService.getById(id);
-		if(Objects.isNull(socioBD)) {
-			logger.error("Actualización de socio fallida, no existe el socio con id: {}",id);
+		if (Objects.isNull(socioBD)) {
+			logger.error("Actualización de socio fallida, no existe el socio con id: {}", id);
 			return new ResponseEntity<ErrorDTO>(
-				new ErrorDTO("Actualización de socio fallida, no existe el socio con id"+id), HttpStatus.NOT_FOUND);
-			}
+					new ErrorDTO("Actualización de socio fallida, no existe el socio con id" + id),
+					HttpStatus.NOT_FOUND);
+		}
 		socioService.actualizar(socio);
-		return new ResponseEntity<Socio>(socio, HttpStatus.OK); 
+		return new ResponseEntity<Socio>(socio, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping("/eliminarsocio/{id}")
-	public ResponseEntity<?> eliminarSocio(@PathVariable("id") Integer id){
+	public ResponseEntity<?> eliminarSocio(@PathVariable("id") Integer id) {
 		logger.info("Eliminando la socio con el id: {}", id);
 		Socio socioBD = socioService.getById(id);
-		if(Objects.isNull(socioBD)) {
+		if (Objects.isNull(socioBD)) {
 			logger.error("Eliminación fallida, no existe el socio con id: {}", id);
 			return new ResponseEntity<ErrorDTO>(
-					new ErrorDTO("Eliminación fallida, no existe la socio con el id: "+
-							id), HttpStatus.NOT_FOUND
-					);
+					new ErrorDTO("Eliminación fallida, no existe la socio con el id: " + id), HttpStatus.NOT_FOUND);
 		}
 		Integer socioEliminado = socioBD.getNroSocio();
 		socioService.eliminar(socioBD);
 		return new ResponseEntity<ErrorDTO>(
-				new ErrorDTO("El socio con nro de socio: " + socioEliminado +
-						" fue eliminado exitosamente."), HttpStatus.OK
-						);
-				
+				new ErrorDTO("El socio con nro de socio: " + socioEliminado + " fue eliminado exitosamente."),
+				HttpStatus.OK);
+
 	}
-	
+
 	@GetMapping("pornrodesocio/{nroSocio}")
-	public ResponseEntity<?> getSocioByNroSocio(@PathVariable("nroSocio") Integer nroSocio){
-		return ResponseEntity.ok(socioService.getSocioByNroSocio(nroSocio) );
+	public ResponseEntity<?> getSocioByNroSocio(@PathVariable("nroSocio") Integer nroSocio) {
+		return ResponseEntity.ok(socioService.getSocioByNroSocio(nroSocio));
 	}
-	
+
 	@GetMapping("pornrodecedula/{nroCedula}")
-	public ResponseEntity<?> getSocioByNroCedula(@PathVariable("nroCedula") Long nroCedula){
-		return ResponseEntity.ok(socioService.getSocioByNroCedula(nroCedula) );
+	public ResponseEntity<?> getSocioByNroCedula(@PathVariable("nroCedula") Long nroCedula) {
+		return ResponseEntity.ok(socioService.getSocioByNroCedula(nroCedula));
 	}
 
 }

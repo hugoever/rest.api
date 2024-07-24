@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
 import jakarta.persistence.Query;
 import py.edu.ucsa.jweb.rest.api.core.dao.AbstractDao;
 import py.edu.ucsa.jweb.rest.api.core.dao.OpcionDao;
@@ -31,6 +32,8 @@ public class OpcionDaoImpl extends AbstractDao<Integer, Opcion> implements Opcio
 	            return (Opcion) q.getSingleResult();
 	        } catch (NoResultException e) {
 	            return null; // Manejar el caso donde no se encuentra la opción
+	        } catch (NonUniqueResultException e) {
+	        	 return null;
 	        }
 	    }
 	

@@ -1,6 +1,11 @@
 package py.edu.ucsa.jweb.rest.api.core.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +15,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import py.edu.ucsa.jweb.rest.api.web.dto.ErrorDTO;
+import py.edu.ucsa.jweb.rest.api.web.validators.Validable;
+import py.edu.ucsa.jweb.rest.api.web.validators.Validador;
 
 
 /**
@@ -21,8 +30,9 @@ import jakarta.persistence.Table;
 @NamedQuery(name="Opcion.findAll", query="SELECT o FROM Opcion o")
 @NamedQuery(name="Opcion.getOpcionesByCodDominio", query="SELECT o FROM Opcion o WHERE o.dominio.codigo = :codigoDominio")
 @NamedQuery(name="Opcion.getOpcionesByCodigoYCodDominio", query="SELECT o FROM Opcion o WHERE o.codigo = :codigoOpcion AND o.dominio.codigo = :codigoDominio")
-public class Opcion implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class Opcion implements Serializable, Validable<Opcion> {
+
+	private static final long serialVersionUID = -6036464063902096235L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -42,7 +52,18 @@ public class Opcion implements Serializable {
 	//uni-directional many-to-one association to Opcion
 	@ManyToOne
 	@JoinColumn(name="id_opcion_padre")
-	private Opcion opcionePadre;
+	private Opcion opcionPadre;
+	
+	@JsonIgnore
+	@Transient
+	private List<Validador<Opcion>> validadores;	
+
+	public List<Validador<Opcion>> getValidadores() {
+		if(Objects.isNull(validadores)) {
+			validadores = new ArrayList<>();
+		}
+		return validadores;
+	}
 
 	public Opcion() {
 	}
@@ -87,12 +108,25 @@ public class Opcion implements Serializable {
 		this.dominio = dominio;
 	}
 
-	public Opcion getOpcionePadre() {
-		return this.opcionePadre;
+	public Opcion getOpcionPadre() {
+		return this.opcionPadre;
 	}
 
-	public void setOpcionePadre(Opcion opcionePadre) {
-		this.opcionePadre = opcionePadre;
+	public void setOpcionPadre(Opcion opcionPadre) {
+		this.opcionPadre = opcionPadre;
+	}
+
+	@Override
+	public List<ErrorDTO> validar() {
+		List<ErrorDTO> errores = new ArrayList<>();
+		this.getValidadores().forEach(v -> errores.addAll(v.validar(this)));
+		return errores;
+	}
+
+	@Override
+	public void agregarValidador(Validador<Opcion> v) {
+		this.getValidadores().add(v);
+		
 	}
 
 }
